@@ -26,8 +26,8 @@ defmodule Elo do
   @k_factor 25
 
   @doc """
-  Calculate new Elo ratings for two given existing ratings (`player_rating`
-  and `opponent_rating`) and a given `result`.
+  Calculate new Elo ratings for two given existing ratings (`player` and
+  `opponent`) and a given `result`.
 
   Result must be 0.0 (first rating loses), 0.5 (draw), or 1.0 (first rating
   wins).
@@ -47,6 +47,11 @@ defmodule Elo do
 
   The expected result is expressed as a winning percentage (probability that
   `player` will win, plus half the probability of a draw).
+
+  ## Examples
+
+      iex(1)> Elo.expected_result(1000, 500)
+      0.9467597847979775
   """
   def expected_result(player, opponent) do
     1.0 / (1.0 + (:math.pow(10.0, ((opponent - player) / 400.0))))
