@@ -3,11 +3,11 @@
 Calculate Elo ratings.
 
 ```elixir
-iex(1)> Elo.rate(1000, 500, :win)
-{1001.3310053800506, 498.66899461994944}
+iex> Elo.rate 1200, 1600, :win
+{1223, 1577}
 ```
 
-See the [documentation](https://hexdocs.pm/elo) for usage.
+See the [documentation](https://hexdocs.pm/elo) for usage information.
 
 ## Installation
 
@@ -21,5 +21,3 @@ end
 
 - [ ] adjustable k-factor
 - [ ] adjustable k-factor rules based on experience
-- [ ] adjustable rounding rules, or at least an integer return on integer match
-- [ ] better interface for win/loss/tie enumerated type; maybe a behavior

@@ -29,27 +29,40 @@ defmodule Elo do
   Calculate new Elo ratings for two given existing ratings (`player` and
   `opponent`) and a given `result`.
 
-  Result must be :win (first rating wins), :draw (a draw), or :loss (first
+  Result must be `:win` (first rating wins), `:draw` (a draw), or `:loss` (first
   rating loses). These are converted to the Elo values 1.0, 0.5, and 0.0,
-  respectively.
+  respectively. You can also pass the numeric value directly.
+
+  Available options for `opts`:
+
+  * `round`: One of `:up`, `:down`, or `true` (half-up), or `false`. By default,
+  rounding occurs only when both `player` and `opponent` are passed as integers.
+  Using the `up` or `down` method consistently will lead to point drift, as
+  point exchange is no longer zero-sum.
 
   ## Examples
 
-      iex(1)> Elo.rate(1000, 500, :win)
-      {1001.3310053800506, 498.66899461994944}
-      iex(1)> Elo.rate(1000, 500, 1.0)
-      {1001.3310053800506, 498.66899461994944}
-      iex(2)> Elo.rate(1000, 500, :loss)
-      {976.3310053800506, 523.6689946199494}
-      iex(3)> Elo.rate(1000, 1000, :draw)
-      {1.0e3, 1.0e3}
+      iex> Elo.rate 1600, 1200, :win
+      {1602, 1198}
+      iex> Elo.rate 1238.0, 1656.5, :loss
+      {1235.9379264316274, 1658.5620735683726}
+      iex> Elo.rate 1238.0, 1656.5, 0.0, round: true
+      {1236, 1659}
   """
-  def rate(player, opponent, :win),  do: rate(player, opponent, 1.0)
-  def rate(player, opponent, :loss), do: rate(player, opponent, 0.0)
-  def rate(player, opponent, :draw), do: rate(player, opponent, 0.5)
-  def rate(player, opponent, result) when result in [0.0, 0.5, 1.0] do
-    {new_rating(player, opponent, result),
-     new_rating(opponent, player, 1.0 - result)}
+  def rate(player, opponent, result, opts \\ [])
+  def rate(player, opponent, result, opts) when is_integer(player) and is_integer(opponent) do
+    # Since both `player` and `opponent` are ints, ensure that the ratings we
+    # return are also ints (unless rounding is explicitly disabled). We also
+    # convert both ratings to floats (via division operator) to avoid calling
+    # this function body again.
+    rate(player / 1, opponent / 1, result, Keyword.merge([round: true], opts))
+  end
+  def rate(player, opponent, :win,   opts), do: rate(player, opponent, 1.0, opts)
+  def rate(player, opponent, :loss,  opts), do: rate(player, opponent, 0.0, opts)
+  def rate(player, opponent, :draw,  opts), do: rate(player, opponent, 0.5, opts)
+  def rate(player, opponent, result, opts) when result in [0.0, 0.5, 1.0] do
+    {new_rating(player, opponent, result, opts),
+     new_rating(opponent, player, 1.0 - result, opts)}
   end
 
   @doc """
@@ -67,18 +80,33 @@ defmodule Elo do
     1.0 / (1.0 + (:math.pow(10.0, ((opponent - player) / 400.0))))
   end
 
-  defp new_rating(player, opponent, result) do
+  defp new_rating(player, opponent, result, opts) do
     player
     |> expected_result(opponent)
     |> elo_change(result)
-    |> elo_result(player)
+    |> elo_result(player, opts[:round])
   end
 
   defp elo_change(expected_result, result) do
     @k_factor * (result - expected_result)
   end
 
+  defp elo_result(change, original, round_strategy) do
+    change
+    |> elo_result(original)
+    |> round(round_strategy)
+  end
+
   defp elo_result(change, original) do
     change + original
+  end
+
+  defp round(result, strategy) do
+    case strategy do
+      :down -> result |> Float.floor |> round
+      :up   -> result |> Float.ceil  |> round
+      true  -> result |> round
+      _     -> result
+    end
   end
 end
