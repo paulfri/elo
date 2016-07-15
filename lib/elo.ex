@@ -29,14 +29,24 @@ defmodule Elo do
   Calculate new Elo ratings for two given existing ratings (`player` and
   `opponent`) and a given `result`.
 
-  Result must be 0.0 (first rating loses), 0.5 (draw), or 1.0 (first rating
-  wins).
+  Result must be :win (first rating wins), :draw (a draw), or :loss (first
+  rating loses). These are converted to the Elo values 1.0, 0.5, and 0.0,
+  respectively.
 
   ## Examples
 
+      iex(1)> Elo.rate(1000, 500, :win)
+      {1001.3310053800506, 498.66899461994944}
       iex(1)> Elo.rate(1000, 500, 1.0)
       {1001.3310053800506, 498.66899461994944}
+      iex(2)> Elo.rate(1000, 500, :loss)
+      {976.3310053800506, 523.6689946199494}
+      iex(3)> Elo.rate(1000, 1000, :draw)
+      {1.0e3, 1.0e3}
   """
+  def rate(player, opponent, :win),  do: rate(player, opponent, 1.0)
+  def rate(player, opponent, :loss), do: rate(player, opponent, 0.0)
+  def rate(player, opponent, :draw), do: rate(player, opponent, 0.5)
   def rate(player, opponent, result) when result in [0.0, 0.5, 1.0] do
     {new_rating(player, opponent, result),
      new_rating(opponent, player, 1.0 - result)}
