@@ -7,6 +7,8 @@ iex(1)> Elo.rate(1000, 500, :win)
 {1001.3310053800506, 498.66899461994944}
 ```
 
+See the [documentation](https://hexdocs.pm/elo) for usage.
+
 ## Installation
 
 ```elixir
