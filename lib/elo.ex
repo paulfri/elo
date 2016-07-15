@@ -61,8 +61,8 @@ defmodule Elo do
   def rate(player, opponent, :loss,  opts), do: rate(player, opponent, 0.0, opts)
   def rate(player, opponent, :draw,  opts), do: rate(player, opponent, 0.5, opts)
   def rate(player, opponent, result, opts) when result in [0.0, 0.5, 1.0] do
-    {new_rating(player, opponent, result, opts),
-     new_rating(opponent, player, 1.0 - result, opts)}
+    {calculate(player,   opponent, result,       opts),
+     calculate(opponent, player,   1.0 - result, opts)}
   end
 
   @doc """
@@ -80,25 +80,21 @@ defmodule Elo do
     1.0 / (1.0 + (:math.pow(10.0, ((opponent - player) / 400.0))))
   end
 
-  defp new_rating(player, opponent, result, opts) do
+  defp calculate(player, opponent, result, opts) do
     player
     |> expected_result(opponent)
-    |> elo_change(result)
-    |> elo_result(player, opts[:round])
+    |> change(result)
+    |> score(player, opts[:round])
   end
 
-  defp elo_change(expected_result, result) do
+  defp change(expected_result, result) do
     @k_factor * (result - expected_result)
   end
 
-  defp elo_result(change, original, round_strategy) do
+  defp score(change, original, round_strategy) do
     change
-    |> elo_result(original)
+    |> (&(&1 + original)).()
     |> round(round_strategy)
-  end
-
-  defp elo_result(change, original) do
-    change + original
   end
 
   defp round(result, strategy) do
