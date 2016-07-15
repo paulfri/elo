@@ -1,5 +1,28 @@
 defmodule Elo do
-  # TODO: adjustable k-factor
+  @moduledoc """
+  The `Elo` module is used to calculate Elo ratings.
+
+  The [Elo rating system](https://en.wikipedia.org/wiki/Elo_rating_system) is
+  used to represent relative skill levels in head-to-head competitive games. A
+  "match" pairs two ratings along with a result (win, loss, or draw); based
+  on the expected result, points are transferred between the two parties.
+
+  The point exchange in an Elo match is always zero-sum (all points subtracted
+  from one party are awarded to the other); therefore, it is not possible to
+  improve a rating with a loss. A larger difference between the actual and
+  expected result will result in a larger point transfer (e.g., an "upset,"
+  where the heavily favored rating loses).
+
+  ## K-factor
+
+  The "K-factor" is a constant applied in the Elo formula that determines the
+  sensitivity (amount of swing) in a given match. The higher the k-factor, the
+  more points will be exchanged.
+
+  Generally, the K-factor can decrease over time as a rating approaches its
+  "true" value. For now, this module only supports a constant K-factor of 25.
+  """
+
   @k_factor 25
 
   @doc """
