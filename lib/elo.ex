@@ -11,10 +11,10 @@ defmodule Elo do
   ## Examples
 
       iex(1)> Elo.rate(1000, 500, 1.0)
-      {1001.3310053800506, 523.6689946199494}
+      {1001.3310053800506, 498.66899461994944}
   """
   def rate(player, opponent, result) when result in [0.0, 0.5, 1.0] do
-    {new_rating(player, opponent, result), new_rating(opponent, player, result)}
+    {new_rating(player, opponent, result), new_rating(opponent, player, 1.0 - result)}
   end
 
   @doc """

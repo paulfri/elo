@@ -9,14 +9,14 @@ defmodule EloTest do
     {player, opponent} = Elo.rate(@player, @opponent, 1.0)
 
     assert player   == 1008.9983750049279
-    assert opponent ==  916.0016249950721
+    assert opponent ==  891.0016249950721
   end
 
   test "loss produces correct result" do
     {player, opponent} = Elo.rate(@player, @opponent, 0.0)
 
     assert player   == 983.9983750049279
-    assert opponent == 891.0016249950721
+    assert opponent == 916.0016249950721
   end
 
   test "draw produce correct result" do
