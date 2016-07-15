@@ -29,7 +29,8 @@ defmodule Elo do
   Calculate new Elo ratings for two given existing ratings (`player_rating`
   and `opponent_rating`) and a given `result`.
 
-  Result must be 0.0 (first rating loses), 0.5 (draw), or 1.0 (first rating wins).
+  Result must be 0.0 (first rating loses), 0.5 (draw), or 1.0 (first rating
+  wins).
 
   ## Examples
 
@@ -37,7 +38,8 @@ defmodule Elo do
       {1001.3310053800506, 498.66899461994944}
   """
   def rate(player, opponent, result) when result in [0.0, 0.5, 1.0] do
-    {new_rating(player, opponent, result), new_rating(opponent, player, 1.0 - result)}
+    {new_rating(player, opponent, result),
+     new_rating(opponent, player, 1.0 - result)}
   end
 
   @doc """
