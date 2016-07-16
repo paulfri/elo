@@ -13,7 +13,7 @@ See the [documentation](https://hexdocs.pm/elo) for usage information.
 
 ```elixir
 def deps do
-  [{:elo, "~> 0.0.1"}]
+  [{:elo, "~> 0.1.0"}]
 end
 ```
 

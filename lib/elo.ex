@@ -13,6 +13,9 @@ defmodule Elo do
   expected result will result in a larger point transfer (e.g., an "upset,"
   where the heavily favored rating loses).
 
+  The primary function for calculating Elo ratings is `rate/4`. You can also
+  get the expected result for a given match with `expected_result/2`.
+
   ## K-factor
 
   The "K-factor" is a constant applied in the Elo formula that determines the
@@ -46,8 +49,10 @@ defmodule Elo do
       {1602, 1198}
       iex> Elo.rate 1238.0, 1656.5, :loss
       {1236.0204093743623, 1658.4795906256377}
-      iex> Elo.rate 1238.0, 1656.5, 0.0, round: true
-      {1236, 1658}
+      iex> Elo.rate 1238.0, 1656.5, :draw, round: true
+      {1248, 1646}
+      iex> Elo.rate 1238.0, 1656.5, :draw, round: true, k_factor: 100
+      {1280, 1615}
   """
   def rate(player, opponent, result, opts \\ [])
   def rate(player, opponent, result, opts) when is_integer(player) and is_integer(opponent) do
