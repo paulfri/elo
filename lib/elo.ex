@@ -17,13 +17,11 @@ defmodule Elo do
 
   The "K-factor" is a constant applied in the Elo formula that determines the
   sensitivity (amount of swing) in a given match. The higher the k-factor, the
-  more points will be exchanged.
-
-  Generally, the K-factor can decrease over time as a rating approaches its
-  "true" value. For now, this module only supports a constant K-factor of 25.
+  more points will be exchanged. Generally, the K-factor can decrease over time
+  as a rating approaches its "true" value.
   """
 
-  @k_factor 25
+  @default_k_factor 24
 
   @doc """
   Calculate new Elo ratings for two given existing ratings (`player` and
@@ -39,15 +37,17 @@ defmodule Elo do
   rounding occurs only when both `player` and `opponent` are passed as integers.
   Using the `up` or `down` method consistently will lead to point drift, as
   point exchange is no longer zero-sum.
+  * `k_factor`: Value to use for the K-factor (see module documentation for an
+   explanation). If not specified, `@default_k_factor` is used.
 
   ## Examples
 
       iex> Elo.rate 1600, 1200, :win
       {1602, 1198}
       iex> Elo.rate 1238.0, 1656.5, :loss
-      {1235.9379264316274, 1658.5620735683726}
+      {1236.0204093743623, 1658.4795906256377}
       iex> Elo.rate 1238.0, 1656.5, 0.0, round: true
-      {1236, 1659}
+      {1236, 1658}
   """
   def rate(player, opponent, result, opts \\ [])
   def rate(player, opponent, result, opts) when is_integer(player) and is_integer(opponent) do
@@ -83,12 +83,16 @@ defmodule Elo do
   defp calculate(player, opponent, result, opts) do
     player
     |> expected_result(opponent)
-    |> change(result)
+    |> change(result, opts[:k_factor])
     |> score(player, opts[:round])
   end
 
-  defp change(expected_result, result) do
-    @k_factor * (result - expected_result)
+  defp change(expected_result, result, nil) do
+    change(expected_result, result, @default_k_factor)
+  end
+
+  defp change(expected_result, result, k_factor) do
+    k_factor * (result - expected_result)
   end
 
   defp score(change, original, round_strategy) do

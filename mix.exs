@@ -3,7 +3,7 @@ defmodule Elo.Mixfile do
 
   def project do
     [app: :elo,
-     version: "0.0.1",
+     version: "0.1.0",
      elixir: "~> 1.0",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
@@ -30,7 +30,6 @@ defmodule Elo.Mixfile do
 
   defp package do
     [name: :elo,
-     maintainers: ["Paul Friedman"],
      licenses: ["MIT"],
      links: %{"GitHub" => "https://github.com/paulfri/elo"},
      maintainers: ["Paul Friedman"]]

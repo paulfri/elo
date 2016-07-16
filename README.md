@@ -4,7 +4,7 @@ Calculate Elo ratings.
 
 ```elixir
 iex> Elo.rate 1200, 1600, :win
-{1223, 1577}
+{1222, 1578}
 ```
 
 See the [documentation](https://hexdocs.pm/elo) for usage information.
@@ -19,5 +19,4 @@ end
 
 ## TODO
 
-- [ ] adjustable k-factor
-- [ ] adjustable k-factor rules based on experience
+- [ ] adjustable k-factor or k-factor rules per player
